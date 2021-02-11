@@ -127,6 +127,10 @@ def convert_cityscapes_instance_only(
         data_dir, out_dir):
     """Convert from cityscapes format to COCO instance seg format - polygons"""
     sets = [
+        #'val',
+        #'train',
+        #'test',
+
         'gtFine_val',
         'gtFine_train',
         'gtFine_test',
@@ -136,6 +140,10 @@ def convert_cityscapes_instance_only(
         # 'gtCoarse_train_extra'
     ]
     ann_dirs = [
+        #'val',
+        #'train',
+        #'test',
+
         'gtFine_trainvaltest/gtFine/val',
         'gtFine_trainvaltest/gtFine/train',
         'gtFine_trainvaltest/gtFine/test',
@@ -194,7 +202,7 @@ def convert_cityscapes_instance_only(
 
                     fullname = os.path.join(root, image['seg_file_name'])
                     objects = cs.instances2dict_with_polygons(
-                        [fullname], verbose=False)[fullname]
+                        [fullname], verbose=False)[os.path.abspath(fullname)]
 
                     for object_cls in objects:
                         if object_cls not in category_instancesonly:
