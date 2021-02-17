@@ -94,23 +94,23 @@ class DatasetCatalog(object):
         },
         "cityscapes_fine_instanceonly_seg_train_cocostyle": {
             "img_dir": "cityscapes/images",
-            "ann_file": "cityscapes/annotations/instancesonly_filtered_gtFine_train.json"
+            "ann_file": "citiscapes_annos/instancesonly_filtered_gtFine_train.json"
         },
         "cityscapes_fine_instanceonly_seg_val_cocostyle": {
             "img_dir": "cityscapes/images",
-            "ann_file": "cityscapes/annotations/instancesonly_filtered_gtFine_val.json"
+            "ann_file": "citiscapes_annos/instancesonly_filtered_gtFine_val.json"
         },
         "cityscapes_fine_instanceonly_seg_test_cocostyle": {
             "img_dir": "cityscapes/images",
-            "ann_file": "cityscapes/annotations/instancesonly_filtered_gtFine_test.json"
+            "ann_file": "citiscapes_annos/instancesonly_filtered_gtFine_test.json"
         },
         "foggy_cityscapes_fine_instanceonly_seg_train_cocostyle": {
             "img_dir": "foggy_cityscapes/images",
-            "ann_file": "foggy_cityscapes/annotations/foggy_instancesonly_filtered_gtFine_train.json"
+            "ann_file": "foggy_citiscapes_annos/instancesonly_filtered_gtFine_train.json"
         },
         "foggy_cityscapes_fine_instanceonly_seg_val_cocostyle": {
             "img_dir": "foggy_cityscapes/images",
-            "ann_file": "foggy_cityscapes/annotations/foggy_instancesonly_filtered_gtFine_val.json"
+            "ann_file": "foggy_citiscapes_annos/instancesonly_filtered_gtFine_val.json"
         },
         'sim10k_cocostyle': {
                 "img_dir": 'sim10k/JPEGImages',
