@@ -93,24 +93,24 @@ class DatasetCatalog(object):
             # PASCAL VOC2012 doesn't made the test annotations available, so there's no json annotation
         },
         "cityscapes_fine_instanceonly_seg_train_cocostyle": {
-            "img_dir": "cityscapes/images",
-            "ann_file": "citiscapes_annos/instancesonly_filtered_gtFine_train.json"
+            "img_dir": "cityscapes/train",
+            "ann_file": "citiscapes_annos/instancesonly_filtered_train.json"
         },
         "cityscapes_fine_instanceonly_seg_val_cocostyle": {
-            "img_dir": "cityscapes/images",
-            "ann_file": "citiscapes_annos/instancesonly_filtered_gtFine_val.json"
+            "img_dir": "cityscapes/val",
+            "ann_file": "citiscapes_annos/instancesonly_filtered_val.json"
         },
         "cityscapes_fine_instanceonly_seg_test_cocostyle": {
-            "img_dir": "cityscapes/images",
-            "ann_file": "citiscapes_annos/instancesonly_filtered_gtFine_test.json"
+            "img_dir": "cityscapes/test",
+            "ann_file": "citiscapes_annos/instancesonly_filtered_test.json"
         },
         "foggy_cityscapes_fine_instanceonly_seg_train_cocostyle": {
-            "img_dir": "foggy_cityscapes/images",
-            "ann_file": "foggy_citiscapes_annos/instancesonly_filtered_gtFine_train.json"
+            "img_dir": "foggy_cityscapes/train",
+            "ann_file": "foggy_citiscapes_annos/instancesonly_filtered_train_foggy_beta_0.005.json"
         },
         "foggy_cityscapes_fine_instanceonly_seg_val_cocostyle": {
-            "img_dir": "foggy_cityscapes/images",
-            "ann_file": "foggy_citiscapes_annos/instancesonly_filtered_gtFine_val.json"
+            "img_dir": "foggy_cityscapes/val",
+            "ann_file": "foggy_citiscapes_annos/instancesonly_filtered_val_foggy_beta_0.005.json"
         },
         'sim10k_cocostyle': {
                 "img_dir": 'sim10k/JPEGImages',
