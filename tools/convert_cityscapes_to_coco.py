@@ -181,12 +181,12 @@ def convert_cityscapes_instance_only(
         annotations = []
         ann_dir = os.path.join(data_dir, ann_dir)
         for root, _, files in os.walk(ann_dir):
-#             print('came')
-#             print(root)
+#           print('came')
+            #print(root)
             for filename in files:
-#                 print(filename,ends_in % data_set.split('_')[0])
+                #print(filename,ends_in % data_set.split('_')[0])
                 t = filename.split('_')
-#                 print('_'.join(i for i in t[0:-1]))
+                #print('_'.join(i for i in t[0:-1]))
                 if filename.endswith(ends_in % '_'.join(i for i in t[0:-1])):
                     if len(images) % 50 == 0:
                         print("Processed %s images, %s annotations" % (
@@ -198,7 +198,8 @@ def convert_cityscapes_instance_only(
 
                     image['width'] = json_ann['imgWidth']
                     image['height'] = json_ann['imgHeight']
-                    image['file_name'] = '_'.join(i for i in t[0:-1]) + '_leftImg8bit.png'
+                    #image['file_name'] = '_'.join(i for i in t[0:-1]) + '_leftImg8bit.png'
+                    image['file_name'] = t[0] + '/' + '_'.join(i for i in t[0:-1]) + '_color.png'
                     image['seg_file_name'] = '_'.join(i for i in t[0:-1]) + '_instanceIds.png'
                     #print(image,filename)
                     images.append(image)
