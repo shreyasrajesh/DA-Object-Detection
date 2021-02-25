@@ -23,10 +23,12 @@ from maskrcnn_benchmark.utils.collect_env import collect_env_info
 from maskrcnn_benchmark.utils.comm import synchronize, get_rank
 from maskrcnn_benchmark.utils.imports import import_file
 from maskrcnn_benchmark.utils.logger import setup_logger
+from maskrcnn_benchmark.utils.metric_logger import (
+    MetricLogger, TensorboardLogger)
 from maskrcnn_benchmark.utils.miscellaneous import mkdir
 
 
-def train(cfg, local_rank, distributed):
+def train(cfg, local_rank, distributed, use_tensorboard=False):
     model = build_detection_model(cfg)
     device = torch.device(cfg.MODEL.DEVICE)
     model.to(device)
@@ -55,6 +57,14 @@ def train(cfg, local_rank, distributed):
 
     checkpoint_period = cfg.SOLVER.CHECKPOINT_PERIOD
 
+    if use_tensorboard:
+        meters = TensorboardLogger(
+            log_dir=cfg.TENSORBOARD_EXPERIMENT,
+            start_iter=arguments['iteration'],
+            delimiter="  ")
+    else:
+        meters = MetricLogger(delimiter="  ")
+
     if cfg.MODEL.DOMAIN_ADAPTATION_ON:
         source_data_loader = make_data_loader(
             cfg,
@@ -82,6 +92,7 @@ def train(cfg, local_rank, distributed):
             checkpoint_period,
             arguments,
             cfg,
+            meters
         )
     else:
         data_loader = make_data_loader(
@@ -100,6 +111,7 @@ def train(cfg, local_rank, distributed):
             device,
             checkpoint_period,
             arguments,
+            meters
         )
 
     return model
@@ -154,6 +166,13 @@ def main():
         action="store_true",
     )
     parser.add_argument(
+        "--use-tensorboard",
+        dest="use_tensorboard",
+        help="Use tensorboardX logger (Requires tensorboardX installed)",
+        action="store_true",
+        default=False
+    )
+    parser.add_argument(
         "opts",
         help="Modify config options using the command-line",
         default=None,
@@ -193,7 +212,13 @@ def main():
         logger.info(config_str)
     logger.info("Running with config:\n{}".format(cfg))
 
-    model = train(cfg, args.local_rank, args.distributed)
+    #model = train(cfg, args.local_rank, args.distributed)
+    model = train(
+        cfg=cfg,
+        local_rank=args.local_rank,
+        distributed=args.distributed,
+        use_tensorboard=args.use_tensorboard
+    )
 
     if not args.skip_test:
         test(cfg, model, args.distributed)
