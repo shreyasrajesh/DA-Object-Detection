@@ -30,6 +30,8 @@ from maskrcnn_benchmark.utils.miscellaneous import mkdir
 
 def train(cfg, local_rank, distributed, use_tensorboard=False):
     model = build_detection_model(cfg)
+    print(model)
+    
     device = torch.device(cfg.MODEL.DEVICE)
     model.to(device)
 
