@@ -30,7 +30,7 @@ from maskrcnn_benchmark.utils.miscellaneous import mkdir
 
 def train(cfg, local_rank, distributed, use_tensorboard=False):
     model = build_detection_model(cfg)
-    print(model)
+#     print(model)
     
     device = torch.device(cfg.MODEL.DEVICE)
     model.to(device)
@@ -54,6 +54,7 @@ def train(cfg, local_rank, distributed, use_tensorboard=False):
     checkpointer = DetectronCheckpointer(
         cfg, model, optimizer, scheduler, output_dir, save_to_disk
     )
+#     return
     extra_checkpoint_data = checkpointer.load(cfg.MODEL.WEIGHT)
     arguments.update(extra_checkpoint_data)
 
