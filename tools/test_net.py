@@ -16,6 +16,8 @@ from maskrcnn_benchmark.utils.collect_env import collect_env_info
 from maskrcnn_benchmark.utils.comm import synchronize, get_rank
 from maskrcnn_benchmark.utils.logger import setup_logger
 from maskrcnn_benchmark.utils.miscellaneous import mkdir
+from maskrcnn_benchmark.solver import make_lr_scheduler
+from maskrcnn_benchmark.solver import make_optimizer
 
 
 def main():
@@ -62,7 +64,9 @@ def main():
     model.to(cfg.MODEL.DEVICE)
 
     output_dir = cfg.OUTPUT_DIR
-    checkpointer = DetectronCheckpointer(cfg, model, save_dir=output_dir)
+    optimizer = make_optimizer(cfg, model)
+    scheduler = make_lr_scheduler(cfg, optimizer)
+    checkpointer = DetectronCheckpointer(cfg, model, optimizer=optimizer, scheduler=scheduler, save_dir=output_dir)
     _ = checkpointer.load(cfg.MODEL.WEIGHT)
 
     iou_types = ("bbox",)
