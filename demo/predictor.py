@@ -9,6 +9,8 @@ from maskrcnn_benchmark.structures.image_list import to_image_list
 from maskrcnn_benchmark.modeling.roi_heads.mask_head.inference import Masker
 from maskrcnn_benchmark import layers as L
 from maskrcnn_benchmark.utils import cv2_util
+from maskrcnn_benchmark.solver import make_lr_scheduler
+from maskrcnn_benchmark.solver import make_optimizer
 
 
 class COCODemo(object):
@@ -113,7 +115,10 @@ class COCODemo(object):
         self.min_image_size = min_image_size
 
         save_dir = cfg.OUTPUT_DIR
-        checkpointer = DetectronCheckpointer(cfg, self.model, save_dir=save_dir)
+        optimizer = make_optimizer(cfg, self.model)
+        scheduler = make_lr_scheduler(cfg, optimizer)
+        checkpointer = DetectronCheckpointer(cfg, self.model, optimizer=optimizer, scheduler=scheduler, save_dir=save_dir)
+#         checkpointer = DetectronCheckpointer(cfg, self.model, save_dir=save_dir)
         _ = checkpointer.load(cfg.MODEL.WEIGHT)
 
         self.transforms = self.build_transform()
@@ -171,7 +176,7 @@ class COCODemo(object):
         """
         predictions = self.compute_prediction(image)
         top_predictions = self.select_top_predictions(predictions)
-        print(top_predictions.get_fields('labels'))
+#         print(top_predictions.get_field('labels'))
 
         result = image.copy()
         if self.show_mask_heatmaps:
@@ -269,7 +274,7 @@ class COCODemo(object):
             box = box.to(torch.int64)
             top_left, bottom_right = box[:2].tolist(), box[2:].tolist()
             image = cv2.rectangle(
-                image, tuple(top_left), tuple(bottom_right), tuple(color), 2
+                image, tuple(top_left), tuple(bottom_right), tuple((255, 153, 255)), 3
             )
 
         return image

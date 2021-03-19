@@ -66,9 +66,7 @@ def main():
     with open('./demo/demo_images.txt', 'r') as f:
         files = f.readlines()
     for idx, to_read in enumerate(files):
-        import pdb; pdb.set_trace();
-        img = cv2.imread(to_read)
-        print(img)
+        img = cv2.imread(to_read.strip())
         composite = coco_demo.run_on_opencv_image(img)
         print(f'./res/test_{idx}.png')
         cv2.imwrite(f'./res/test_{idx}.png',composite)
