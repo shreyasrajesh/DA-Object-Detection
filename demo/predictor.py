@@ -171,6 +171,7 @@ class COCODemo(object):
         """
         predictions = self.compute_prediction(image)
         top_predictions = self.select_top_predictions(predictions)
+        print(top_predictions.get_fields('labels'))
 
         result = image.copy()
         if self.show_mask_heatmaps:
@@ -268,7 +269,7 @@ class COCODemo(object):
             box = box.to(torch.int64)
             top_left, bottom_right = box[:2].tolist(), box[2:].tolist()
             image = cv2.rectangle(
-                image, tuple(top_left), tuple(bottom_right), tuple(color), 1
+                image, tuple(top_left), tuple(bottom_right), tuple(color), 2
             )
 
         return image

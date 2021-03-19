@@ -1,0 +1,12 @@
+./datasets/cityscapes/test/munich/munich_000000_000019_leftImg8bit.png
+./datasets/foggy_cityscapes/test/munich/munich_000000_000019_leftImg8bit_foggy_beta_0.005.png
+./datasets/foggy_cityscapes/test/munich/munich_000000_000019_leftImg8bit_foggy_beta_0.01.png
+./datasets/foggy_cityscapes/test/munich/munich_000000_000019_leftImg8bit_foggy_beta_0.02.png
+./datasets/cityscapes/test/berlin/berlin_000125_000019_leftImg8bit.png
+./datasets/foggy_cityscapes/test/berlin/berlin_000125_000019_leftImg8bit_foggy_beta_0.005.png
+./datasets/foggy_cityscapes/test/berlin/berlin_000125_000019_leftImg8bit_foggy_beta_0.01.png
+./datasets/foggy_cityscapes/test/berlin/berlin_000125_000019_leftImg8bit_foggy_beta_0.02.png
+./datasets/cityscapes/test/bielefeld/bielefeld_000000_049446_leftImg8bit.png
+./datasets/cityscapes/test/bielefeld/bielefeld_000000_049446_leftImg8bit_foggy_beta_0.005.png
+./datasets/cityscapes/test/bielefeld/bielefeld_000000_049446_leftImg8bit_foggy_beta_0.01.png
+./datasets/cityscapes/test/bielefeld/bielefeld_000000_049446_leftImg8bit_foggy_beta_0.02.png

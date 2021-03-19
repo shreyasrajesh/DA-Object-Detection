@@ -28,6 +28,7 @@ dist/
 # project dirs
 /datasets
 /models
+/runs
 
 # log files
 *.out
