@@ -31,6 +31,12 @@ class GeneralizedRCNN(nn.Module):
         self.rpn = build_rpn(cfg)
         self.roi_heads = build_roi_heads(cfg)
         self.da_heads = build_da_heads(cfg)
+        self.center_loss = False
+        if cfg.MODEL.CENTER_ON:
+            # hard coding
+            self.register_buffer('centers', (torch.rand(2, 2888) - 0.5) * 2)
+            self.register_buffer('centers_inst', (torch.rand(512, 1024) - 0.5) * 2)
+            self.center_loss = True
 
     def forward(self, images, targets=None):
         """
@@ -53,8 +59,10 @@ class GeneralizedRCNN(nn.Module):
         da_losses = {}
         if self.roi_heads:
             x, result, detector_losses, da_ins_feas, da_ins_labels = self.roi_heads(features, proposals, targets)
-            if self.da_heads:
-                da_losses = self.da_heads(features, da_ins_feas, da_ins_labels, targets)
+            if self.da_heads and not self.center_loss and self.training:
+                da_losses, cent_deltas, cent_inst_deltas = self.da_heads(features, da_ins_feas, da_ins_labels, targets, None, None)
+            if self.da_heads and self.center_loss and self.training:
+                da_losses, cent_deltas, cent_inst_deltas = self.da_heads(features, da_ins_feas, da_ins_labels, targets, self.centers, self.centers_inst)
 
         else:
             # RPN-only models don't have roi_heads
@@ -67,6 +75,6 @@ class GeneralizedRCNN(nn.Module):
             losses.update(detector_losses)
             losses.update(proposal_losses)
             losses.update(da_losses)
-            return losses
+            return losses, cent_deltas, cent_inst_deltas
 
         return result

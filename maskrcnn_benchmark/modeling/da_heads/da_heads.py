@@ -60,10 +60,10 @@ class DAInsHead(nn.Module):
         x = F.dropout(x, p=0.5, training=self.training)
 
         x = F.relu(self.fc2_da(x))
-        x = F.dropout(x, p=0.5, training=self.training)
+        x = F.dropout(x, p=0.5, training=self.training) #(256, 1024)
 
-        x = self.fc3_da(x)
-        return x
+        x1 = self.fc3_da(x)
+        return x1, x
 
 
 class DomainAdaptationModule(torch.nn.Module):
@@ -88,6 +88,8 @@ class DomainAdaptationModule(torch.nn.Module):
         self.img_weight = cfg.MODEL.DA_HEADS.DA_IMG_LOSS_WEIGHT
         self.ins_weight = cfg.MODEL.DA_HEADS.DA_INS_LOSS_WEIGHT
         self.cst_weight = cfg.MODEL.DA_HEADS.DA_CST_LOSS_WEIGHT
+        self.center_weight = cfg.MODEL.DA_HEADS.DA_CENT_LOSS_WEIGHT
+        self.center_loss = cfg.MODEL.CENTER_ON
 
         self.grl_img = GradientScalarLayer(-1.0*self.cfg.MODEL.DA_HEADS.DA_IMG_GRL_WEIGHT)
         self.grl_ins = GradientScalarLayer(-1.0*self.cfg.MODEL.DA_HEADS.DA_INS_GRL_WEIGHT)
@@ -100,7 +102,7 @@ class DomainAdaptationModule(torch.nn.Module):
         self.inshead = DAInsHead(num_ins_inputs)
         self.loss_evaluator = make_da_heads_loss_evaluator(cfg)
 
-    def forward(self, img_features, da_ins_feature, da_ins_labels, targets=None):
+    def forward(self, img_features, da_ins_feature, da_ins_labels, targets=None,centers = None,centers_inst=None):
         """
         Arguments:
             img_features (list[Tensor]): features computed from the images that are
@@ -123,15 +125,16 @@ class DomainAdaptationModule(torch.nn.Module):
         ins_grl_consist_fea = self.grl_ins_consist(da_ins_feature)
 
         da_img_features = self.imghead(img_grl_fea)
-        da_ins_features = self.inshead(ins_grl_fea)
+#         print("len(da_img_features)", len(da_img_features)) 1?? 
+
+        #output of second last fc layer for center loss 
+        da_ins_features, da_ins_center = self.inshead(ins_grl_fea)
         da_img_consist_features = self.imghead(img_grl_consist_fea)
-        da_ins_consist_features = self.inshead(ins_grl_consist_fea)
+        da_ins_consist_features,_ = self.inshead(ins_grl_consist_fea)
         da_img_consist_features = [fea.sigmoid() for fea in da_img_consist_features]
         da_ins_consist_features = da_ins_consist_features.sigmoid()
         if self.training:
-            da_img_loss, da_ins_loss, da_consistency_loss = self.loss_evaluator(
-                da_img_features, da_ins_features, da_img_consist_features, da_ins_consist_features, da_ins_labels, targets
-            )
+            da_img_loss, da_ins_loss, da_consistency_loss, center_loss, cent_deltas,center_inst_loss, cent_inst_deltas = self.loss_evaluator(da_img_features, da_ins_features, da_img_consist_features, da_ins_consist_features, da_ins_labels, targets,centers, centers_inst, da_ins_center)
             losses = {}
             if self.img_weight > 0:
                 losses["loss_da_image"] = self.img_weight * da_img_loss
@@ -139,7 +142,10 @@ class DomainAdaptationModule(torch.nn.Module):
                 losses["loss_da_instance"] = self.ins_weight * da_ins_loss
             if self.cst_weight > 0:
                 losses["loss_da_consistency"] = self.cst_weight * da_consistency_loss
-            return losses
+            if self.center_loss:
+                losses["loss_center"] = self.center_weight * center_loss
+                losses["loss_center_inst"] = self.center_weight * center_inst_loss
+            return losses,cent_deltas,cent_inst_deltas
         return {}
 
 def build_da_heads(cfg):

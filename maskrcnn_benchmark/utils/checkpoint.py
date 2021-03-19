@@ -38,10 +38,14 @@ class Checkpointer(object):
 
         data = {}
         data["model"] = self.model.state_dict()
-        if self.optimizer is not None:
-            data["optimizer"] = self.optimizer.state_dict()
-        if self.scheduler is not None:
-            data["scheduler"] = self.scheduler.state_dict()
+        if self.optimizer[0] is not None:
+            data["optimizer0"] = self.optimizer[0].state_dict()
+        if self.optimizer[1] is not None:
+            data["optimizer1"] = self.optimizer[1].state_dict()
+        if self.scheduler[0] is not None:
+            data["scheduler0"] = self.scheduler[0].state_dict()
+        if self.scheduler[1] is not None:
+            data["scheduler1"] = self.scheduler[1].state_dict()
         data.update(kwargs)
 
         save_file = os.path.join(self.save_dir, "{}.pth".format(name))
@@ -60,13 +64,19 @@ class Checkpointer(object):
         self.logger.info("Loading checkpoint from {}".format(f))
         checkpoint = self._load_file(f)
         self._load_model(checkpoint)
-        if "optimizer" in checkpoint and self.optimizer:
-            self.logger.info("Loading optimizer from {}".format(f))
-            self.optimizer.load_state_dict(checkpoint.pop("optimizer"))
-        if "scheduler" in checkpoint and self.scheduler:
-            self.logger.info("Loading scheduler from {}".format(f))
-            self.scheduler.load_state_dict(checkpoint.pop("scheduler"))
-
+        print("optimizer: ", self.optimizer) 
+        if "optimizer0" in checkpoint or self.optimizer[0]:
+            self.logger.info("Loading optimizer0 from {}".format(f))
+            self.optimizer[0].load_state_dict(checkpoint.pop("optimizer0"))
+        if "optimizer1" in checkpoint or self.optimizer[1]:
+            self.logger.info("Loading optimizer1 from {}".format(f))
+            self.optimizer[1].load_state_dict(checkpoint.pop("optimizer1"))
+        if "scheduler0" in checkpoint or self.scheduler[0]:
+            self.logger.info("Loading scheduler0 from {}".format(f))
+            self.scheduler[0].load_state_dict(checkpoint.pop("scheduler0"))
+        if "scheduler1" in checkpoint or self.scheduler[1]:
+            self.logger.info("Loading scheduler1 from {}".format(f))
+            self.scheduler[1].load_state_dict(checkpoint.pop("scheduler1"))
         # return any further checkpoint data
         return checkpoint
 

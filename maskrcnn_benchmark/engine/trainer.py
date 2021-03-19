@@ -143,21 +143,33 @@ def do_da_train(
         images = (source_images+target_images).to(device)
         targets = [target.to(device) for target in list(source_targets+target_targets)]
 
-        loss_dict = model(images, targets)
+        loss_dict,center_deltas, center_inst_deltas = model(images, targets)
 
-        losses = sum(loss for loss in loss_dict.values())
+        losses = sum(loss_dict[loss] for loss in loss_dict if 'loss_center' not in loss) 
+        center_loss = sum(loss_dict[loss] for loss in loss_dict if 'loss_center' in loss)
 
         # reduce losses over all GPUs for logging purposes
         loss_dict_reduced = reduce_loss_dict(loss_dict)
         losses_reduced = sum(loss for loss in loss_dict_reduced.values())
         meters.update(loss=losses_reduced, **loss_dict_reduced)
 
-        optimizer.zero_grad()
-        losses.backward()
-        optimizer.step()
-        
-        scheduler.step()
-
+        optimizer[0].zero_grad()
+        if optimizer[1]:
+             optimizer[1].zero_grad()
+        losses.backward(retain_graph=True)
+        if optimizer[1]:
+            center_loss.backward()
+            optimizer[1].step()
+            
+        optimizer[0].step()
+        scheduler[0].step()
+        if optimizer[1]:
+            scheduler[1].step()
+            
+        if cfg.MODEL.CENTER_ON:
+            model.centers = model.centers - center_deltas
+            model.centers_inst = model.centers_inst - center_inst_deltas
+            
         batch_time = time.time() - end
         end = time.time()
         meters.update(time=batch_time, data=data_time)
@@ -179,7 +191,7 @@ def do_da_train(
                     eta=eta_string,
                     iter=iteration,
                     meters=str(meters),
-                    lr=optimizer.param_groups[0]["lr"],
+                    lr=optimizer[0].param_groups[0]["lr"],
                     memory=torch.cuda.max_memory_allocated() / 1024.0 / 1024.0,
                 )
             )

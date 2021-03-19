@@ -7,12 +7,24 @@ from maskrcnn_benchmark.modeling import registry
 from maskrcnn_benchmark.modeling.make_layers import conv_with_kaiming_uniform
 from . import fpn as fpn_module
 from . import resnet
+from . import seresnet
+from . import domain_attention_resnet
+
+@registry.BACKBONES.register("SER-50-C4")
+@registry.BACKBONES.register("SER-50-C5")
+@registry.BACKBONES.register("SER-101-C4")
+@registry.BACKBONES.register("SER-101-C5")
+def build_seresnet_backbone(cfg):
+    body = seresnet.SEResNet(cfg)
+    model = nn.Sequential(OrderedDict([("body", body)]))
+    return model
 
 @registry.BACKBONES.register("R-50-C4")
 @registry.BACKBONES.register("R-50-C5")
 @registry.BACKBONES.register("R-101-C4")
 @registry.BACKBONES.register("R-101-C5")
 def build_resnet_backbone(cfg):
+#     body = domain_attention_resnet.DAResNet(cfg)
     body = resnet.ResNet(cfg)
     model = nn.Sequential(OrderedDict([("body", body)]))
     return model

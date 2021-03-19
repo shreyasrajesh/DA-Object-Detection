@@ -29,7 +29,7 @@ _C.MODEL.KEYPOINT_ON = False
 _C.MODEL.DEVICE = "cuda"
 _C.MODEL.META_ARCHITECTURE = "GeneralizedRCNN"
 _C.MODEL.CLS_AGNOSTIC_BBOX_REG = False
-
+_C.MODEL.CENTER_ON =True
 # If the WEIGHT starts with a catalog://, like :R-50, the code will look for
 # the path in paths_catalog. Else, it will use it as the specified absolute
 # path
@@ -94,7 +94,7 @@ _C.MODEL.BACKBONE = CN()
 _C.MODEL.BACKBONE.CONV_BODY = "R-50-C4"
 
 # Add StopGrad at a specified stage so the bottom layers are frozen
-_C.MODEL.BACKBONE.FREEZE_CONV_BODY_AT = 2
+_C.MODEL.BACKBONE.FREEZE_CONV_BODY_AT = 2 # There is an SE Adaptor at layer 1 
 _C.MODEL.BACKBONE.OUT_CHANNELS = 256 * 4
 # GN for backbone
 _C.MODEL.BACKBONE.USE_GN = False
@@ -258,6 +258,7 @@ _C.MODEL.DA_HEADS.DA_INS_GRL_WEIGHT = 0.1
 _C.MODEL.DA_HEADS.DA_IMG_LOSS_WEIGHT = 1.0
 _C.MODEL.DA_HEADS.DA_INS_LOSS_WEIGHT = 1.0
 _C.MODEL.DA_HEADS.DA_CST_LOSS_WEIGHT = 0.1
+_C.MODEL.DA_HEADS.DA_CENT_LOSS_WEIGHT = 1.0
 
 # ---------------------------------------------------------------------------- #
 # ResNe[X]t options (ResNets = {ResNet, ResNeXt}
@@ -287,6 +288,7 @@ _C.MODEL.RESNETS.RES5_DILATION = 1
 _C.MODEL.RESNETS.RES2_OUT_CHANNELS = 256
 _C.MODEL.RESNETS.STEM_OUT_CHANNELS = 64
 
+_C.MODEL.RESNETS.FIXED_BLOCKS = 1
 
 # ---------------------------------------------------------------------------- #
 # RetinaNet Options (Follow the Detectron version)
@@ -371,10 +373,34 @@ _C.SOLVER.WARMUP_METHOD = "linear"
 
 _C.SOLVER.CHECKPOINT_PERIOD = 2500
 
+
 # Number of images per batch
 # This is global, so if we have 8 GPUs and IMS_PER_BATCH = 16, each GPU will
 # see 2 images per batch
 _C.SOLVER.IMS_PER_BATCH = 16
+# ---------------------------------------------------------------------------- #
+# Solver CENTER LOSS
+# ---------------------------------------------------------------------------- #
+_C.SOLVER_CENTER = CN()
+_C.SOLVER_CENTER.MAX_ITER = 40000
+
+_C.SOLVER_CENTER.BASE_LR = 0.001
+_C.SOLVER_CENTER.BIAS_LR_FACTOR = 2
+
+_C.SOLVER_CENTER.MOMENTUM = 0.9
+
+_C.SOLVER_CENTER.WEIGHT_DECAY = 0.0005
+_C.SOLVER_CENTER.WEIGHT_DECAY_BIAS = 0
+
+_C.SOLVER_CENTER.GAMMA = 0.1
+_C.SOLVER_CENTER.STEPS = (30000,)
+
+_C.SOLVER_CENTER.WARMUP_FACTOR = 1.0 / 3
+_C.SOLVER_CENTER.WARMUP_ITERS = 500
+_C.SOLVER_CENTER.WARMUP_METHOD = "linear"
+
+_C.SOLVER_CENTER.CHECKPOINT_PERIOD = 2500
+_C.SOLVER_CENTER.IMS_PER_BATCH = 16
 
 # ---------------------------------------------------------------------------- #
 # Specific test options
@@ -398,4 +424,4 @@ _C.OUTPUT_DIR = "."
 _C.PATHS_CATALOG = os.path.join(os.path.dirname(__file__), "paths_catalog.py")
 
 # TensorBoard experiment location
-_C.TENSORBOARD_EXPERIMENT = os.path.join(os.path.dirname(__file__), "../../../domain-adaptation/runs/")
+_C.TENSORBOARD_EXPERIMENT = os.path.join(os.path.dirname(__file__), "../../runs/")
